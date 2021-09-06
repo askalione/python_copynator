@@ -16,7 +16,15 @@ def copytree(src, dst, symlinks=False, ignore=None):
     if not os.path.exists(dst):
         os.makedirs(dst)
     
-    items = os.listdir(src)
+    items = []
+
+    try:
+        items = os.listdir(src)
+    except Exception as ex:
+        total_errors += 1
+        logger.error(ex)
+        return
+
     total = len(items)
     root = src == SRC_PATH
 
@@ -33,6 +41,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
                 try:
                     shutil.copy2(s, d)
                 except Exception as ex:
+                    total_errors += 1
                     logger.error(ex)
         if root:
             logger.info('{0} of {1}) Folder "{2}" has been copied'.format(index + 1 , total, os.path.basename(s)))
