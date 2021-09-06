@@ -5,8 +5,10 @@ SRC_PATH = './data/from'
 DST_PATH = './data/to'
 
 logger = copynator_logger.get_logger()
+total_errors = 0
 
 def copytree(src, dst, symlinks=False, ignore=None):
+    global total_errors
     if not src:
         raise Exception('Source path must be not emtpy')
     if not dst:
