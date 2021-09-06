@@ -1,8 +1,10 @@
-import os
-import shutil
+import os, shutil
+import copynator_logger
 
 SRC_PATH = './data/from'
 DST_PATH = './data/to'
+
+logger = copynator_logger.get_logger()
 
 def copytree(src, dst, symlinks=False, ignore=None):
     if not src:
@@ -19,7 +21,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
     root = src == SRC_PATH
 
     if root:    
-        print('Total items {0}'.format(len(items)))	
+        logger.info('Total items {0}'.format(len(items)))
 
     for index, item in enumerate(items):
         s = os.path.join(src, item)
@@ -28,11 +30,15 @@ def copytree(src, dst, symlinks=False, ignore=None):
             copytree(s, d, symlinks, ignore)
         else:
             if not os.path.exists(d):
-                shutil.copy2(s, d)
+                try:
+                    shutil.copy2(s, d)
+                except Exception as ex:
+                    logger.error(ex)
         if root:
-            print('{0} of {1}) Folder "{2}" has been copied'.format(index + 1 , total, os.path.basename(s)))
+            logger.info('{0} of {1}) Folder "{2}" has been copied'.format(index + 1 , total, os.path.basename(s)))
 
 
 if __name__ == '__main__':
+    logger.info('Start new copy session')
     copytree(SRC_PATH, DST_PATH)
-    print('All data has been copied')
+    logger.info('End copy session')
